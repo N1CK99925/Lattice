@@ -5,9 +5,11 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
-func Run_Walker() error {
+func Run_Walker() ([]string, error) {
 	fmt.Println("Do you want to run the current repository or another file path?")
 	fmt.Println("1. Run the current repository")
 	fmt.Println("2. Run another file path")
@@ -16,34 +18,47 @@ func Run_Walker() error {
 
 	switch {
 	case choice == 1:
-		Walk_dir(".")
+		files, err := Walk_dir(".")
 		fmt.Println("Walking current repository")
-		return nil
+		if err != nil {
+			return nil, err
+		}
+		return files, nil
 
 	case choice == 2:
 		fmt.Println("Enter the file path")
 		var path string
 		fmt.Scanf("%s", &path)
-		Walk_dir(path)
 		fmt.Println("Walking another file path")
-		return nil
+		files, err := Walk_dir(path)
+		if err != nil {
+			return nil, err
+		}
+		return files, nil
 
 	default:
 		fmt.Println("Invalid choice")
-		return nil
+		return nil, nil
 	}
+
 }
 
-func Walk_dir(root_path string) error {
+func Walk_dir(root_path string) ([]string, error) {
 	root := root_path
 	filesystem := os.DirFS(root)
-
+	var Files []string
 	fs.WalkDir(filesystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			log.Printf("err %v", err)
 		}
-		fmt.Println(path)
+		if d.IsDir() && strings.HasPrefix(d.Name(), ".git") {
+			return fs.SkipDir
+		}
+		if !d.IsDir() && filepath.Ext(path) == ".go" {
+			Files = append(Files, path)
+		}
+		fmt.Println(Files)
 		return nil
 	})
-	return nil
+	return Files, nil
 }

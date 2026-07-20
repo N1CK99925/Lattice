@@ -1,14 +1,22 @@
 package main
 
 import (
+	"Lattice/internal/parser"
 	"Lattice/internal/repository"
 	"log"
 )
 
 func main() {
-	err := repository.Run_Walker()
+	log.Println("Lattice is running")
+	log.Println("...")
+	files, err := repository.Run_Walker()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Lattice is running")
+	for _, file := range files {
+		err := parser.ParseFile(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
