@@ -20,16 +20,21 @@ var GoSymbolKinds = map[string]SymbolKind{
 	"var_spec":             VariableSymbol,
 }
 
-type Symbols struct {
+type Symbol struct {
 	Name      string
 	Kind      SymbolKind
 	StartLine uint32
 	EndLine   uint32
 }
 
+type Import struct {
+	Path string
+}
+
 type ParsedFile struct {
 	Path    string
-	Symbols []Symbols
+	Symbols []Symbol
+	Imports []Import
 }
 
 type RepositoryIndex struct {

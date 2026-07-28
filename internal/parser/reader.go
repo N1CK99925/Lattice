@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
 	tree_sitter_go "github.com/tree-sitter/tree-sitter-go/bindings/go"
@@ -61,36 +62,62 @@ func ParseFile(path string) (ParsedFile, error) {
 		if match == nil {
 			break
 		}
-		var defNode *tree_sitter.Node
-		var nameNode *tree_sitter.Node
 
-		for _, capture := range match.Captures {
-			captureName := query.CaptureNames()[capture.Index]
-			switch captureName {
-			case "symbol.def":
-				defNode = &capture.Node
-			case "symbol.name":
-				nameNode = &capture.Node
-			}
-		}
-		if defNode == nil && nameNode == nil {
-			continue
+		if symbol := extractSymbol(match, query, source); symbol != nil {
+			parsedFile.Symbols = append(parsedFile.Symbols, *symbol)
 		}
 
-		kind, ok := GoSymbolKinds[defNode.Kind()]
-		if !ok {
-			continue
+		if imp := extractImport(match, query, source); imp != nil {
+			parsedFile.Imports = append(parsedFile.Imports, *imp)
 		}
-
-		symbol := Symbols{
-			Name:      nameNode.Utf8Text(source),
-			Kind:      kind,
-			StartLine: uint32(defNode.StartPosition().Row + 1),
-			EndLine:   uint32(defNode.EndPosition().Row + 1),
-		}
-		parsedFile.Symbols = append(parsedFile.Symbols, symbol)
 	}
 	return parsedFile, nil
 }
+func extractSymbol(
+	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Symbol {
+	var defNode *tree_sitter.Node
+	var nameNode *tree_sitter.Node
 
+	for _, capture := range match.Captures {
+		captureName := query.CaptureNames()[capture.Index]
+		switch captureName {
+		case "symbol.def":
+			defNode = &capture.Node
+		case "symbol.name":
+			nameNode = &capture.Node
+		}
+	}
+	if defNode == nil || nameNode == nil {
+		return nil
+	}
+	kind, ok := GoSymbolKinds[defNode.Kind()]
+	if !ok {
+		return nil
+	}
+	return &Symbol{
+		Name:      nameNode.Utf8Text(source),
+		Kind:      kind,
+		StartLine: uint32(defNode.StartPosition().Row + 1),
+		EndLine:   uint32(defNode.EndPosition().Row + 1),
+	}
+}
+
+func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Import {
+	var moduleNode *tree_sitter.Node
+	for _, capture := range match.Captures {
+		captureName := query.CaptureNames()[capture.Index]
+		switch captureName {
+		case "import.module":
+			moduleNode = &capture.Node
+		}
+	}
+	if moduleNode == nil {
+		return nil
+	}
+	return &Import{
+		Path: strings.Trim(moduleNode.Utf8Text(source), `"`),
+	}
+}
+
+//TODO: CACHE QUERY
 //TODO: this rn does consider var_spec as top level and not a local like it does consider var that are local or more important make sure to add the ParentId column in v2
