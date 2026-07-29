@@ -70,6 +70,12 @@ func ParseFile(path string) (ParsedFile, error) {
 		if imp := extractImport(match, query, source); imp != nil {
 			parsedFile.Imports = append(parsedFile.Imports, *imp)
 		}
+		if call := extractCall(match, query, source); call != nil {
+			parsedFile.Calls = append(parsedFile.Calls, *call)
+		}
+		if typeRef := extractTypeRef(match, query, source); typeRef != nil {
+			parsedFile.TypeRefs = append(parsedFile.TypeRefs, *typeRef)
+		}
 	}
 	return parsedFile, nil
 }
@@ -116,6 +122,61 @@ func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sour
 	}
 	return &Import{
 		Path: strings.Trim(moduleNode.Utf8Text(source), `"`),
+	}
+}
+func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Call {
+	var siteNode *tree_sitter.Node
+	var targetNode *tree_sitter.Node
+	var receiverNode *tree_sitter.Node
+	// var argumentsNode *tree_sitter.Node
+	for _, capture := range match.Captures {
+		switch query.CaptureNames()[capture.Index] {
+		case "call.site":
+			siteNode = &capture.Node
+
+		case "call.target":
+			targetNode = &capture.Node
+
+		case "call.receiver":
+			receiverNode = &capture.Node
+
+			// case "call.arguments":
+			// argumentsNode = &capture.Node
+		}
+	}
+	if siteNode == nil || targetNode == nil {
+		return nil
+	}
+	receiver := ""
+
+	if receiverNode != nil {
+		receiver = receiverNode.Utf8Text(source)
+	}
+
+	return &Call{
+		Target:    targetNode.Utf8Text(source),
+		Receiver:  receiver,
+		StartLine: uint32(siteNode.StartPosition().Row + 1),
+		EndLine:   uint32(siteNode.EndPosition().Row + 1),
+	}
+}
+
+func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *TypeRef {
+	var typeNode *tree_sitter.Node
+	for _, capture := range match.Captures {
+		captureName := query.CaptureNames()[capture.Index]
+		switch captureName {
+		case "param.type":
+			typeNode = &capture.Node
+		}
+	}
+	if typeNode == nil {
+		return nil
+	}
+	return &TypeRef{
+		Text:      typeNode.Utf8Text(source),
+		StartLine: uint32(typeNode.StartPosition().Row + 1),
+		EndLine:   uint32(typeNode.EndPosition().Row + 1),
 	}
 }
 

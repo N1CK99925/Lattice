@@ -24,8 +24,19 @@ func main() {
 			log.Fatal(err)
 		}
 
+		log.Println("Symbols:")
 		for _, symbol := range parsedFile.Symbols {
 			log.Println(symbol.Name, symbol.Kind)
+		}
+
+		log.Println("Imports:")
+		for _, imp := range parsedFile.Imports {
+			log.Println(imp.Path)
+		}
+
+		log.Println("Calls:")
+		for _, call := range parsedFile.Calls {
+			log.Printf("%s.%s", call.Receiver, call.Target)
 		}
 	}
 }

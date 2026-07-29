@@ -30,11 +30,23 @@ type Symbol struct {
 type Import struct {
 	Path string
 }
-
+type Call struct {
+	Target    string
+	Receiver  string
+	StartLine uint32
+	EndLine   uint32
+}
+type TypeRef struct {
+	Text      string
+	StartLine uint32
+	EndLine   uint32
+}
 type ParsedFile struct {
-	Path    string
-	Symbols []Symbol
-	Imports []Import
+	Path     string
+	Symbols  []Symbol
+	Imports  []Import
+	Calls    []Call
+	TypeRefs []TypeRef
 }
 
 type RepositoryIndex struct {
