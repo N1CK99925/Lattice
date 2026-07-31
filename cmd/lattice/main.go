@@ -2,6 +2,7 @@ package main
 
 import (
 	"Lattice/internal/parser"
+	"Lattice/internal/resolver"
 	"fmt"
 	"log"
 )
@@ -35,4 +36,5 @@ func main() {
 			log.Printf("%s.%s", call.Receiver, call.Target)
 		}
 	}
+	resolver.Resolve(index)
 }

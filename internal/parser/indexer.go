@@ -1,6 +1,8 @@
 package parser
 
-import "Lattice/internal/repository"
+import (
+	"Lattice/internal/repository"
+)
 
 func BuildRepositoryIndex(path string) (*RepositoryIndex, error) {
 	files, err := repository.Walk(path)
