@@ -40,11 +40,12 @@ type Import struct {
 	File string
 }
 type Call struct {
-	Target    string
-	File      string
-	Receiver  string
-	StartLine uint32
-	EndLine   uint32
+	ParentSymbolID string
+	Target         string
+	File           string
+	Receiver       string
+	StartLine      uint32
+	EndLine        uint32
 }
 type TypeRef struct {
 	Text      string
@@ -53,7 +54,7 @@ type TypeRef struct {
 	EndLine   uint32
 }
 type ParsedFile struct {
-	File     string
+	Path     string
 	Package  string
 	Symbols  []Symbol
 	Imports  []Import

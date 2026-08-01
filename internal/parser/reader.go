@@ -76,6 +76,7 @@ func ParseFile(path string) (ParsedFile, error) {
 		if call := extractCall(match, query, source, ctx); call != nil {
 			parsedFile.Calls = append(parsedFile.Calls, *call)
 		}
+		fmt.Printf("Calls : %+v\n", parsedFile.Calls)
 		if typeRef := extractTypeRef(match, query, source, ctx); typeRef != nil {
 			parsedFile.TypeRefs = append(parsedFile.TypeRefs, *typeRef)
 		}
@@ -131,6 +132,29 @@ func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sour
 		File: ctx.Path,
 	}
 }
+
+// This symbol is used to get the parent of the call , so u can map caller -> calee
+func enclosingSymbolID(node *tree_sitter.Node, source []byte, ctx ParseContext) string {
+	for node != nil {
+		switch node.Kind() {
+		case "function_declaration":
+			name := node.ChildByFieldName("name")
+			if name != nil {
+				return ctx.Path + "::" + name.Utf8Text(source)
+			}
+
+		case "method_declaration":
+			name := node.ChildByFieldName("name")
+			if name != nil {
+				return ctx.Path + "::" + name.Utf8Text(source)
+			}
+		}
+
+		node = node.Parent()
+	}
+
+	return ""
+}
 func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Call {
 	var siteNode *tree_sitter.Node
 	var targetNode *tree_sitter.Node
@@ -161,11 +185,12 @@ func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source
 	}
 
 	return &Call{
-		Target:    targetNode.Utf8Text(source),
-		File:      ctx.Path,
-		Receiver:  receiver,
-		StartLine: uint32(siteNode.StartPosition().Row + 1),
-		EndLine:   uint32(siteNode.EndPosition().Row + 1),
+		ParentSymbolID: enclosingSymbolID(siteNode, source, ctx),
+		Target:         targetNode.Utf8Text(source),
+		File:           ctx.Path,
+		Receiver:       receiver,
+		StartLine:      uint32(siteNode.StartPosition().Row + 1),
+		EndLine:        uint32(siteNode.EndPosition().Row + 1),
 	}
 }
 
