@@ -62,25 +62,28 @@ func ParseFile(path string) (ParsedFile, error) {
 		if match == nil {
 			break
 		}
+		ctx := ParseContext{
+			Path: path,
+		}
 
-		if symbol := extractSymbol(match, query, source); symbol != nil {
+		if symbol := extractSymbol(match, query, source, ctx); symbol != nil {
 			parsedFile.Symbols = append(parsedFile.Symbols, *symbol)
 		}
 
-		if imp := extractImport(match, query, source); imp != nil {
+		if imp := extractImport(match, query, source, ctx); imp != nil {
 			parsedFile.Imports = append(parsedFile.Imports, *imp)
 		}
-		if call := extractCall(match, query, source); call != nil {
+		if call := extractCall(match, query, source, ctx); call != nil {
 			parsedFile.Calls = append(parsedFile.Calls, *call)
 		}
-		if typeRef := extractTypeRef(match, query, source); typeRef != nil {
+		if typeRef := extractTypeRef(match, query, source, ctx); typeRef != nil {
 			parsedFile.TypeRefs = append(parsedFile.TypeRefs, *typeRef)
 		}
 	}
 	return parsedFile, nil
 }
 func extractSymbol(
-	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Symbol {
+	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Symbol {
 	var defNode *tree_sitter.Node
 	var nameNode *tree_sitter.Node
 
@@ -102,13 +105,16 @@ func extractSymbol(
 	}
 	return &Symbol{
 		Name:      nameNode.Utf8Text(source),
+		File:      ctx.Path,
 		Kind:      kind,
+		ID:        ctx.Path + "::" + nameNode.Utf8Text(source),
 		StartLine: uint32(defNode.StartPosition().Row + 1),
 		EndLine:   uint32(defNode.EndPosition().Row + 1),
 	}
+
 }
 
-func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Import {
+func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Import {
 	var moduleNode *tree_sitter.Node
 	for _, capture := range match.Captures {
 		captureName := query.CaptureNames()[capture.Index]
@@ -122,9 +128,10 @@ func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sour
 	}
 	return &Import{
 		Path: strings.Trim(moduleNode.Utf8Text(source), `"`),
+		File: ctx.Path,
 	}
 }
-func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *Call {
+func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Call {
 	var siteNode *tree_sitter.Node
 	var targetNode *tree_sitter.Node
 	var receiverNode *tree_sitter.Node
@@ -155,13 +162,14 @@ func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source
 
 	return &Call{
 		Target:    targetNode.Utf8Text(source),
+		File:      ctx.Path,
 		Receiver:  receiver,
 		StartLine: uint32(siteNode.StartPosition().Row + 1),
 		EndLine:   uint32(siteNode.EndPosition().Row + 1),
 	}
 }
 
-func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte) *TypeRef {
+func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *TypeRef {
 	var typeNode *tree_sitter.Node
 	for _, capture := range match.Captures {
 		captureName := query.CaptureNames()[capture.Index]
@@ -175,6 +183,7 @@ func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sou
 	}
 	return &TypeRef{
 		Text:      typeNode.Utf8Text(source),
+		File:      ctx.Path,
 		StartLine: uint32(typeNode.StartPosition().Row + 1),
 		EndLine:   uint32(typeNode.EndPosition().Row + 1),
 	}

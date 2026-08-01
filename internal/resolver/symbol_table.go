@@ -11,10 +11,15 @@ func BuildSymbolTable(index *parser.RepositoryIndex) map[string]*parser.Symbol {
 	for _, file := range index.Files {
 		for i := range file.Symbols {
 			symbol := &file.Symbols[i]
-			symbolTable[symbol.Name] = symbol
+			symbolTable[symbol.ID] = symbol
 		}
 	}
-	fmt.Printf("%+v\n", *symbolTable["ParseFile"])
+	symbol, ok := symbolTable["internal/parser/reader.go::ParseFile"]
+	if !ok {
+		fmt.Println("ParseFile not found")
+	} else {
+		fmt.Printf("%+v\n", *symbol)
+	}
 	return symbolTable
 
 }

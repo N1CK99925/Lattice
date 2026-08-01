@@ -20,8 +20,16 @@ var GoSymbolKinds = map[string]SymbolKind{
 	"var_spec":             VariableSymbol,
 }
 
+type ParseContext struct {
+	Path    string
+	Package string
+}
+
 type Symbol struct {
+	ID        string
 	Name      string
+	Package   string
+	File      string
 	Kind      SymbolKind
 	StartLine uint32
 	EndLine   uint32
@@ -29,20 +37,24 @@ type Symbol struct {
 
 type Import struct {
 	Path string
+	File string
 }
 type Call struct {
 	Target    string
+	File      string
 	Receiver  string
 	StartLine uint32
 	EndLine   uint32
 }
 type TypeRef struct {
 	Text      string
+	File      string
 	StartLine uint32
 	EndLine   uint32
 }
 type ParsedFile struct {
-	Path     string
+	File     string
+	Package  string
 	Symbols  []Symbol
 	Imports  []Import
 	Calls    []Call
