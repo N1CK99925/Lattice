@@ -2,7 +2,6 @@ package resolver
 
 import (
 	"Lattice/internal/parser"
-	"fmt"
 )
 
 type SymbolTable struct {
@@ -23,12 +22,12 @@ func BuildSymbolTable(index *parser.RepositoryIndex) SymbolTable {
 			table.ByName[symbol.Name] = append(table.ByName[symbol.Name], symbol)
 		}
 	}
-	symbol, ok := table.ByID["internal/parser/reader.go::ParseFile"]
-	if !ok {
-		fmt.Println("ParseFile not found")
-	} else {
-		fmt.Printf("%+v\n", *symbol)
-	}
+	// symbol, ok := table.ByID["internal/parser/reader.go::ParseFile"]
+	// if !ok {
+	// 	fmt.Println("ParseFile not found")
+	// } else {
+	// 	// fmt.Printf("%+v\n", *symbol)
+	// }
 	return table
 
 }

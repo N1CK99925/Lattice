@@ -1,7 +1,9 @@
 package parser
 
 import (
-	"fmt"
+	cached "Lattice/internal/queries"
+	_ "embed"
+	"log"
 	"os"
 	"strings"
 
@@ -27,12 +29,7 @@ func ParseFile(path string) (ParsedFile, error) {
 	if err != nil {
 		return parsedFile, err
 	}
-
-	querySource, err := os.ReadFile("internal/queries/go.scm")
-	if err != nil {
-		fmt.Printf("%v", err)
-		return parsedFile, err
-	}
+	querySource := cached.QuerySource
 
 	parser := tree_sitter.NewParser()
 	language := tree_sitter.NewLanguage(tree_sitter_go.Language())
@@ -76,7 +73,7 @@ func ParseFile(path string) (ParsedFile, error) {
 		if call := extractCall(match, query, source, ctx); call != nil {
 			parsedFile.Calls = append(parsedFile.Calls, *call)
 		}
-		fmt.Printf("Calls : %+v\n", parsedFile.Calls)
+		log.Printf("Calls : %+v\n", parsedFile.Calls)
 		if typeRef := extractTypeRef(match, query, source, ctx); typeRef != nil {
 			parsedFile.TypeRefs = append(parsedFile.TypeRefs, *typeRef)
 		}

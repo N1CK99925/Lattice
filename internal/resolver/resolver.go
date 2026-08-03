@@ -7,9 +7,9 @@ import (
 
 func Resolve(index *parser.RepositoryIndex) {
 	symbolTable := BuildSymbolTable(index)
-	for k := range symbolTable.ByID {
-		fmt.Println(k)
-	}
+	// for k := range symbolTable.ByID {
+	// fmt.Println(k)
+	// }
 	for _, file := range index.Files {
 		for _, call := range file.Calls {
 			symbols, ok := symbolTable.ByName[call.Target]

@@ -11,7 +11,6 @@ func BuildRepositoryIndex(path string) (*RepositoryIndex, error) {
 
 	}
 	index := &RepositoryIndex{}
-
 	for _, file := range files {
 		parsedFile, err := ParseFile(file)
 		if err != nil {
