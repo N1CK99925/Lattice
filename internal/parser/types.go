@@ -30,6 +30,7 @@ type Symbol struct {
 	Name      string
 	Package   string
 	File      string
+	Receiver  string
 	Kind      SymbolKind
 	StartLine uint32
 	EndLine   uint32

@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	tree_sitter "github.com/tree-sitter/go-tree-sitter"
@@ -21,6 +22,7 @@ func ReadFiles(file string) ([]byte, error) {
 }
 
 func ParseFile(path string) (ParsedFile, error) {
+
 	parsedFile := ParsedFile{
 		Path: path,
 	}
@@ -84,6 +86,7 @@ func extractSymbol(
 	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Symbol {
 	var defNode *tree_sitter.Node
 	var nameNode *tree_sitter.Node
+	var receiverNode *tree_sitter.Node
 
 	for _, capture := range match.Captures {
 		captureName := query.CaptureNames()[capture.Index]
@@ -92,9 +95,11 @@ func extractSymbol(
 			defNode = &capture.Node
 		case "symbol.name":
 			nameNode = &capture.Node
+		case "symbol.receiver":
+			receiverNode = &capture.Node
 		}
 	}
-	if defNode == nil || nameNode == nil {
+	if defNode == nil || nameNode == nil || receiverNode == nil {
 		return nil
 	}
 	kind, ok := GoSymbolKinds[defNode.Kind()]
@@ -105,7 +110,8 @@ func extractSymbol(
 		Name:      nameNode.Utf8Text(source),
 		File:      ctx.Path,
 		Kind:      kind,
-		ID:        ctx.Path + "::" + nameNode.Utf8Text(source),
+		Receiver:  receiverNode.Utf8Text(source),
+		ID:        ctx.Path + "::" + string(kind) + "::" + receiverNode.Utf8Text(source) + "::" + nameNode.Utf8Text(source) + "::" + strconv.Itoa(int(defNode.StartPosition().Row+1)),
 		StartLine: uint32(defNode.StartPosition().Row + 1),
 		EndLine:   uint32(defNode.EndPosition().Row + 1),
 	}
