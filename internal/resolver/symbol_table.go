@@ -1,19 +1,19 @@
 package resolver
 
 import (
-	"Lattice/internal/parser"
+	"Lattice/internal/models"
 )
 
 type SymbolTable struct {
-	ByID   map[string]*parser.Symbol
-	ByName map[string][]*parser.Symbol
+	ByID   map[string]*models.Symbol
+	ByName map[string][]*models.Symbol
 }
 
-func BuildSymbolTable(index *parser.RepositoryIndex) SymbolTable {
+func BuildSymbolTable(index *models.RepositoryIndex) SymbolTable {
 
 	table := SymbolTable{
-		ByID:   make(map[string]*parser.Symbol),
-		ByName: make(map[string][]*parser.Symbol),
+		ByID:   make(map[string]*models.Symbol),
+		ByName: make(map[string][]*models.Symbol),
 	}
 	for _, file := range index.Files {
 		for i := range file.Symbols {

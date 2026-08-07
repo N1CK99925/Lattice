@@ -1,4 +1,4 @@
-package parser
+package models
 
 //this contains all the types that are used in Query of tree sitter
 

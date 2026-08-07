@@ -4,6 +4,7 @@ import (
 	"Lattice/internal/logger"
 	"Lattice/internal/parser"
 	"Lattice/internal/resolver"
+	"Lattice/internal/storage"
 	"fmt"
 	"log"
 	"log/slog"
@@ -15,7 +16,7 @@ func main() {
 		Json:  true,
 	})
 	log.Println("Lattice is running")
-
+	storage.New("./Lattice.db")
 	var root string
 	fmt.Scanf("%s", &root)
 
@@ -43,4 +44,5 @@ func main() {
 	// 	}
 	// }
 	resolver.Resolve(index)
+
 }

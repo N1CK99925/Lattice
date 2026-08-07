@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"Lattice/internal/models"
 	cached "Lattice/internal/queries"
 	_ "embed"
 	"log"
@@ -21,9 +22,9 @@ func ReadFiles(file string) ([]byte, error) {
 	return source, nil
 }
 
-func ParseFile(path string) (ParsedFile, error) {
+func ParseFile(path string) (models.ParsedFile, error) {
 
-	parsedFile := ParsedFile{
+	parsedFile := models.ParsedFile{
 		Path: path,
 	}
 
@@ -61,7 +62,7 @@ func ParseFile(path string) (ParsedFile, error) {
 		if match == nil {
 			break
 		}
-		ctx := ParseContext{
+		ctx := models.ParseContext{
 			Path: path,
 		}
 
@@ -83,7 +84,7 @@ func ParseFile(path string) (ParsedFile, error) {
 	return parsedFile, nil
 }
 func extractSymbol(
-	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Symbol {
+	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx models.ParseContext) *models.Symbol {
 	var defNode *tree_sitter.Node
 	var nameNode *tree_sitter.Node
 	var receiverNode *tree_sitter.Node
@@ -99,26 +100,31 @@ func extractSymbol(
 			receiverNode = &capture.Node
 		}
 	}
-	if defNode == nil || nameNode == nil || receiverNode == nil {
+	if defNode == nil || nameNode == nil {
 		return nil
 	}
-	kind, ok := GoSymbolKinds[defNode.Kind()]
+
+	receiver := ""
+	if receiverNode != nil {
+		receiver = receiverNode.Utf8Text(source)
+	}
+	kind, ok := models.GoSymbolKinds[defNode.Kind()]
 	if !ok {
 		return nil
 	}
-	return &Symbol{
+	return &models.Symbol{
 		Name:      nameNode.Utf8Text(source),
 		File:      ctx.Path,
 		Kind:      kind,
-		Receiver:  receiverNode.Utf8Text(source),
-		ID:        ctx.Path + "::" + string(kind) + "::" + receiverNode.Utf8Text(source) + "::" + nameNode.Utf8Text(source) + "::" + strconv.Itoa(int(defNode.StartPosition().Row+1)),
+		Receiver:  receiver,
+		ID:        ctx.Path + "::" + string(kind) + "::" + receiver + "::" + nameNode.Utf8Text(source) + "::" + strconv.Itoa(int(defNode.StartPosition().Row+1)),
 		StartLine: uint32(defNode.StartPosition().Row + 1),
 		EndLine:   uint32(defNode.EndPosition().Row + 1),
 	}
 
 }
 
-func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Import {
+func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx models.ParseContext) *models.Import {
 	var moduleNode *tree_sitter.Node
 	for _, capture := range match.Captures {
 		captureName := query.CaptureNames()[capture.Index]
@@ -130,27 +136,29 @@ func extractImport(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sour
 	if moduleNode == nil {
 		return nil
 	}
-	return &Import{
+	return &models.Import{
 		Path: strings.Trim(moduleNode.Utf8Text(source), `"`),
 		File: ctx.Path,
 	}
 }
 
 // This symbol is used to get the parent of the call , so u can map caller -> calee
-func enclosingSymbolID(node *tree_sitter.Node, source []byte, ctx ParseContext) string {
+func enclosingSymbolID(node *tree_sitter.Node, source []byte, ctx models.ParseContext) string {
 	for node != nil {
 		switch node.Kind() {
-		case "function_declaration":
+		case "function_declaration", "method_declaration":
 			name := node.ChildByFieldName("name")
-			if name != nil {
-				return ctx.Path + "::" + name.Utf8Text(source)
+			if name == nil {
+				break
 			}
-
-		case "method_declaration":
-			name := node.ChildByFieldName("name")
-			if name != nil {
-				return ctx.Path + "::" + name.Utf8Text(source)
+			receiver := ""
+			if node.Kind() == "method_declaration" {
+				if r := node.ChildByFieldName("receiver"); r != nil {
+					receiver = r.Utf8Text(source)
+				}
 			}
+			kind := models.GoSymbolKinds[node.Kind()]
+			return ctx.Path + "::" + string(kind) + "::" + receiver + "::" + name.Utf8Text(source) + "::" + strconv.Itoa(int(node.StartPosition().Row+1))
 		}
 
 		node = node.Parent()
@@ -158,7 +166,7 @@ func enclosingSymbolID(node *tree_sitter.Node, source []byte, ctx ParseContext) 
 
 	return ""
 }
-func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *Call {
+func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx models.ParseContext) *models.Call {
 	var siteNode *tree_sitter.Node
 	var targetNode *tree_sitter.Node
 	var receiverNode *tree_sitter.Node
@@ -187,8 +195,8 @@ func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source
 		receiver = receiverNode.Utf8Text(source)
 	}
 
-	return &Call{
-		ParentSymbolID: enclosingSymbolID(siteNode, source, ctx),
+	return &models.Call{
+		ParentSymbolID: enclosingSymbolID(siteNode, source, ctx) + "::" + receiver,
 		Target:         targetNode.Utf8Text(source),
 		File:           ctx.Path,
 		Receiver:       receiver,
@@ -197,7 +205,7 @@ func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source
 	}
 }
 
-func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx ParseContext) *TypeRef {
+func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx models.ParseContext) *models.TypeRef {
 	var typeNode *tree_sitter.Node
 	for _, capture := range match.Captures {
 		captureName := query.CaptureNames()[capture.Index]
@@ -209,7 +217,7 @@ func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sou
 	if typeNode == nil {
 		return nil
 	}
-	return &TypeRef{
+	return &models.TypeRef{
 		Text:      typeNode.Utf8Text(source),
 		File:      ctx.Path,
 		StartLine: uint32(typeNode.StartPosition().Row + 1),
@@ -217,5 +225,4 @@ func extractTypeRef(match *tree_sitter.QueryMatch, query *tree_sitter.Query, sou
 	}
 }
 
-//TODO: CACHE QUERY
 //TODO: this rn does consider var_spec as top level and not a local like it does consider var that are local or more important make sure to add the ParentId column in v2

@@ -1,11 +1,12 @@
 package parser
 
 import (
+	"Lattice/internal/models"
 	"Lattice/internal/repository"
 	"path/filepath"
 )
 
-func BuildRepositoryIndex(path string) (*RepositoryIndex, error) {
+func BuildRepositoryIndex(path string) (*models.RepositoryIndex, error) {
 	absRoot, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
@@ -15,7 +16,7 @@ func BuildRepositoryIndex(path string) (*RepositoryIndex, error) {
 		return nil, err
 
 	}
-	index := &RepositoryIndex{}
+	index := &models.RepositoryIndex{}
 	for _, file := range files {
 		abs := filepath.Join(absRoot, file)
 		parsedFile, err := ParseFile(abs)

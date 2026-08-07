@@ -1,11 +1,11 @@
 package resolver
 
 import (
-	"Lattice/internal/parser"
+	"Lattice/internal/models"
 	"fmt"
 )
 
-func Resolve(index *parser.RepositoryIndex) {
+func Resolve(index *models.RepositoryIndex) {
 	symbolTable := BuildSymbolTable(index)
 	// for k := range symbolTable.ByID {
 	// fmt.Println(k)
