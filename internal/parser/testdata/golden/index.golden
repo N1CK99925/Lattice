@@ -1,0 +1,260 @@
+[
+  {
+    "path": "basic.go",
+    "symbols": [
+      {
+        "ID": "basic.go::constant::::DefaultName::7",
+        "Name": "DefaultName",
+        "Package": "",
+        "File": "basic.go",
+        "Receiver": "",
+        "Kind": "constant",
+        "StartLine": 7,
+        "EndLine": 7
+      },
+      {
+        "ID": "basic.go::function::::helper::3",
+        "Name": "helper",
+        "Package": "",
+        "File": "basic.go",
+        "Receiver": "",
+        "Kind": "function",
+        "StartLine": 3,
+        "EndLine": 3
+      },
+      {
+        "ID": "basic.go::function::::scale::9",
+        "Name": "scale",
+        "Package": "",
+        "File": "basic.go",
+        "Receiver": "",
+        "Kind": "function",
+        "StartLine": 9,
+        "EndLine": 11
+      },
+      {
+        "ID": "basic.go::variable::::MaxRetries::5",
+        "Name": "MaxRetries",
+        "Package": "",
+        "File": "basic.go",
+        "Receiver": "",
+        "Kind": "variable",
+        "StartLine": 5,
+        "EndLine": 5
+      }
+    ],
+    "imports": [],
+    "calls": [
+      {
+        "ParentSymbolID": "basic.go::function::::scale::9::",
+        "Target": "helper",
+        "File": "basic.go",
+        "Receiver": "",
+        "StartLine": 10,
+        "EndLine": 10
+      }
+    ],
+    "type_refs": [
+      {
+        "Text": "int",
+        "File": "basic.go",
+        "StartLine": 3,
+        "EndLine": 3
+      },
+      {
+        "Text": "int",
+        "File": "basic.go",
+        "StartLine": 3,
+        "EndLine": 3
+      },
+      {
+        "Text": "int",
+        "File": "basic.go",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "Text": "int",
+        "File": "basic.go",
+        "StartLine": 9,
+        "EndLine": 9
+      }
+    ]
+  },
+  {
+    "path": "imports.go",
+    "symbols": [
+      {
+        "ID": "imports.go::function::::logBoth::12",
+        "Name": "logBoth",
+        "Package": "",
+        "File": "imports.go",
+        "Receiver": "",
+        "Kind": "function",
+        "StartLine": 12,
+        "EndLine": 14
+      },
+      {
+        "ID": "imports.go::function::::sanitize::8",
+        "Name": "sanitize",
+        "Package": "",
+        "File": "imports.go",
+        "Receiver": "",
+        "Kind": "function",
+        "StartLine": 8,
+        "EndLine": 10
+      }
+    ],
+    "imports": [
+      {
+        "Path": "fmt",
+        "File": "imports.go"
+      },
+      {
+        "Path": "strings",
+        "File": "imports.go"
+      }
+    ],
+    "calls": [
+      {
+        "ParentSymbolID": "imports.go::function::::sanitize::8::strings",
+        "Target": "TrimSpace",
+        "File": "imports.go",
+        "Receiver": "strings",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "ParentSymbolID": "imports.go::function::::logBoth::12::fmt",
+        "Target": "Println",
+        "File": "imports.go",
+        "Receiver": "fmt",
+        "StartLine": 13,
+        "EndLine": 13
+      }
+    ],
+    "type_refs": [
+      {
+        "Text": "string",
+        "File": "imports.go",
+        "StartLine": 8,
+        "EndLine": 8
+      },
+      {
+        "Text": "string",
+        "File": "imports.go",
+        "StartLine": 8,
+        "EndLine": 8
+      },
+      {
+        "Text": "Cache",
+        "File": "imports.go",
+        "StartLine": 12,
+        "EndLine": 12
+      }
+    ]
+  },
+  {
+    "path": "methods.go",
+    "symbols": [
+      {
+        "ID": "methods.go::function::::NewCache::7",
+        "Name": "NewCache",
+        "Package": "",
+        "File": "methods.go",
+        "Receiver": "",
+        "Kind": "function",
+        "StartLine": 7,
+        "EndLine": 7
+      },
+      {
+        "ID": "methods.go::method::(c *Cache)::Get::11",
+        "Name": "Get",
+        "Package": "",
+        "File": "methods.go",
+        "Receiver": "(c *Cache)",
+        "Kind": "method",
+        "StartLine": 11,
+        "EndLine": 11
+      },
+      {
+        "ID": "methods.go::method::(c *Cache)::Put::9",
+        "Name": "Put",
+        "Package": "",
+        "File": "methods.go",
+        "Receiver": "(c *Cache)",
+        "Kind": "method",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "ID": "methods.go::type::::Cache::3",
+        "Name": "Cache",
+        "Package": "",
+        "File": "methods.go",
+        "Receiver": "",
+        "Kind": "type",
+        "StartLine": 3,
+        "EndLine": 5
+      }
+    ],
+    "imports": [],
+    "calls": [],
+    "type_refs": [
+      {
+        "Text": "int",
+        "File": "methods.go",
+        "StartLine": 4,
+        "EndLine": 4
+      },
+      {
+        "Text": "*Cache",
+        "File": "methods.go",
+        "StartLine": 7,
+        "EndLine": 7
+      },
+      {
+        "Text": "Cache",
+        "File": "methods.go",
+        "StartLine": 7,
+        "EndLine": 7
+      },
+      {
+        "Text": "*Cache",
+        "File": "methods.go",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "Text": "int",
+        "File": "methods.go",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "Text": "string",
+        "File": "methods.go",
+        "StartLine": 9,
+        "EndLine": 9
+      },
+      {
+        "Text": "*Cache",
+        "File": "methods.go",
+        "StartLine": 11,
+        "EndLine": 11
+      },
+      {
+        "Text": "int",
+        "File": "methods.go",
+        "StartLine": 11,
+        "EndLine": 11
+      },
+      {
+        "Text": "string",
+        "File": "methods.go",
+        "StartLine": 11,
+        "EndLine": 11
+      }
+    ]
+  }
+]

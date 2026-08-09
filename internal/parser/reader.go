@@ -4,7 +4,6 @@ import (
 	"Lattice/internal/models"
 	cached "Lattice/internal/queries"
 	_ "embed"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -76,7 +75,6 @@ func ParseFile(path string) (models.ParsedFile, error) {
 		if call := extractCall(match, query, source, ctx); call != nil {
 			parsedFile.Calls = append(parsedFile.Calls, *call)
 		}
-		log.Printf("Calls : %+v\n", parsedFile.Calls)
 		if typeRef := extractTypeRef(match, query, source, ctx); typeRef != nil {
 			parsedFile.TypeRefs = append(parsedFile.TypeRefs, *typeRef)
 		}
