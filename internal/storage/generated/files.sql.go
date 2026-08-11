@@ -29,29 +29,30 @@ func (q *Queries) GetFileByPath(ctx context.Context, path string) (File, error) 
 	return i, err
 }
 
-const insertFile = `-- name: InsertFile :exec
-INSERT INTO files (
-    path,
-    language,
-    hash,
-    parsed_at
-)
+const upsertFile = `-- name: UpsertFile :one
+INSERT INTO files (path, language, hash, parsed_at)
 VALUES (?, ?, ?, ?)
+ON CONFLICT(path) DO UPDATE SET
+    hash = excluded.hash,
+    parsed_at = excluded.parsed_at
+RETURNING id
 `
 
-type InsertFileParams struct {
+type UpsertFileParams struct {
 	Path     string
 	Language string
 	Hash     string
 	ParsedAt time.Time
 }
 
-func (q *Queries) InsertFile(ctx context.Context, arg InsertFileParams) error {
-	_, err := q.db.ExecContext(ctx, insertFile,
+func (q *Queries) UpsertFile(ctx context.Context, arg UpsertFileParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, upsertFile,
 		arg.Path,
 		arg.Language,
 		arg.Hash,
 		arg.ParsedAt,
 	)
-	return err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

@@ -33,4 +33,5 @@ type Symbol struct {
 	StartLine int64
 	EndLine   int64
 	Exported  bool
+	Scope     string
 }

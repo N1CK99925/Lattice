@@ -10,7 +10,8 @@
         "Receiver": "",
         "Kind": "constant",
         "StartLine": 7,
-        "EndLine": 7
+        "EndLine": 7,
+        "Scope": "package"
       },
       {
         "ID": "basic.go::function::::helper::3",
@@ -20,7 +21,8 @@
         "Receiver": "",
         "Kind": "function",
         "StartLine": 3,
-        "EndLine": 3
+        "EndLine": 3,
+        "Scope": "package"
       },
       {
         "ID": "basic.go::function::::scale::9",
@@ -30,7 +32,8 @@
         "Receiver": "",
         "Kind": "function",
         "StartLine": 9,
-        "EndLine": 11
+        "EndLine": 11,
+        "Scope": "package"
       },
       {
         "ID": "basic.go::variable::::MaxRetries::5",
@@ -40,13 +43,14 @@
         "Receiver": "",
         "Kind": "variable",
         "StartLine": 5,
-        "EndLine": 5
+        "EndLine": 5,
+        "Scope": "package"
       }
     ],
     "imports": [],
     "calls": [
       {
-        "ParentSymbolID": "basic.go::function::::scale::9::",
+        "ParentSymbolID": "basic.go::function::::scale::9",
         "Target": "helper",
         "File": "basic.go",
         "Receiver": "",
@@ -92,7 +96,8 @@
         "Receiver": "",
         "Kind": "function",
         "StartLine": 12,
-        "EndLine": 14
+        "EndLine": 14,
+        "Scope": "package"
       },
       {
         "ID": "imports.go::function::::sanitize::8",
@@ -102,7 +107,8 @@
         "Receiver": "",
         "Kind": "function",
         "StartLine": 8,
-        "EndLine": 10
+        "EndLine": 10,
+        "Scope": "package"
       }
     ],
     "imports": [
@@ -117,7 +123,7 @@
     ],
     "calls": [
       {
-        "ParentSymbolID": "imports.go::function::::sanitize::8::strings",
+        "ParentSymbolID": "imports.go::function::::sanitize::8",
         "Target": "TrimSpace",
         "File": "imports.go",
         "Receiver": "strings",
@@ -125,7 +131,7 @@
         "EndLine": 9
       },
       {
-        "ParentSymbolID": "imports.go::function::::logBoth::12::fmt",
+        "ParentSymbolID": "imports.go::function::::logBoth::12",
         "Target": "Println",
         "File": "imports.go",
         "Receiver": "fmt",
@@ -165,7 +171,8 @@
         "Receiver": "",
         "Kind": "function",
         "StartLine": 7,
-        "EndLine": 7
+        "EndLine": 7,
+        "Scope": "package"
       },
       {
         "ID": "methods.go::method::(c *Cache)::Get::11",
@@ -175,7 +182,8 @@
         "Receiver": "(c *Cache)",
         "Kind": "method",
         "StartLine": 11,
-        "EndLine": 11
+        "EndLine": 11,
+        "Scope": "package"
       },
       {
         "ID": "methods.go::method::(c *Cache)::Put::9",
@@ -185,7 +193,8 @@
         "Receiver": "(c *Cache)",
         "Kind": "method",
         "StartLine": 9,
-        "EndLine": 9
+        "EndLine": 9,
+        "Scope": "package"
       },
       {
         "ID": "methods.go::type::::Cache::3",
@@ -195,7 +204,8 @@
         "Receiver": "",
         "Kind": "type",
         "StartLine": 3,
-        "EndLine": 5
+        "EndLine": 5,
+        "Scope": "package"
       }
     ],
     "imports": [],

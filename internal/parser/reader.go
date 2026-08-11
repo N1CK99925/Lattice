@@ -81,6 +81,18 @@ func ParseFile(path string) (models.ParsedFile, error) {
 	}
 	return parsedFile, nil
 }
+func symbolScope(defNode *tree_sitter.Node) string {
+	for n := defNode.Parent(); n != nil; n = n.Parent() {
+		switch n.Kind() {
+		case "function_declaration", "method_declaration":
+			return "local"
+		case "source_file":
+			return "package"
+		}
+	}
+	return "package"
+}
+
 func extractSymbol(
 	match *tree_sitter.QueryMatch, query *tree_sitter.Query, source []byte, ctx models.ParseContext) *models.Symbol {
 	var defNode *tree_sitter.Node
@@ -118,6 +130,7 @@ func extractSymbol(
 		ID:        ctx.Path + "::" + string(kind) + "::" + receiver + "::" + nameNode.Utf8Text(source) + "::" + strconv.Itoa(int(defNode.StartPosition().Row+1)),
 		StartLine: uint32(defNode.StartPosition().Row + 1),
 		EndLine:   uint32(defNode.EndPosition().Row + 1),
+		Scope:     symbolScope(defNode),
 	}
 
 }
@@ -194,7 +207,7 @@ func extractCall(match *tree_sitter.QueryMatch, query *tree_sitter.Query, source
 	}
 
 	return &models.Call{
-		ParentSymbolID: enclosingSymbolID(siteNode, source, ctx) + "::" + receiver,
+		ParentSymbolID: enclosingSymbolID(siteNode, source, ctx),
 		Target:         targetNode.Utf8Text(source),
 		File:           ctx.Path,
 		Receiver:       receiver,

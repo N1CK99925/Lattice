@@ -4,6 +4,7 @@ import (
 	"Lattice/internal/logger"
 	"Lattice/internal/storage/generated"
 	"database/sql"
+	"fmt"
 
 	_ "modernc.org/sqlite"
 )
@@ -31,6 +32,14 @@ func New(path string) (*Store, error) {
 			db.Close()
 			return nil, err
 		}
+	}
+
+	// Apply pending embedded migrations in order before anything touches the
+	// schema; a fresh database ends up fully migrated, an existing one only
+	// gets the migrations it is missing.
+	if err := migrate(db); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("migrate: %w", err)
 	}
 
 	db.SetMaxOpenConns(1)

@@ -34,6 +34,7 @@ type Symbol struct {
 	Kind      SymbolKind
 	StartLine uint32
 	EndLine   uint32
+	Scope     string
 }
 
 type Import struct {
