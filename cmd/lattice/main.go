@@ -76,15 +76,15 @@ func main() {
 		toPersist = append(toPersist, fileHash{path: abs, hash: hash})
 	}
 
-	table := resolver.BuildSymbolTable(&index)
-	resolve := func(target string) (string, bool) {
-		syms, ok := table.ByName[target]
-		if !ok || len(syms) == 0 {
-			return "", false
-		}
-		return syms[0].ID, true
-	}
-
+	// table := resolver.BuildSymbolTable(&index)
+	// resolve := func(target string) (string, bool) {
+	// 	syms, ok := table.ByName[target]
+	// 	if !ok || len(syms) == 0 {
+	// 		return "", false
+	// 	}
+	// 	return syms[0].ID, true
+	// }
+	resolve := resolver.Resolve(&index)
 	for _, fh := range toPersist {
 		for _, pf := range index.Files {
 			if pf.Path == fh.path {

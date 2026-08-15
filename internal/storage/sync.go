@@ -20,7 +20,7 @@ func (s *Store) IsCurrent(ctx context.Context, path, hash string) (bool, error) 
 	return f.Hash == hash, nil
 }
 
-type ResolveFunc func(target string) (string, bool)
+type ResolveFunc func(models.Call) (string, bool)
 
 func (s *Store) PersistFile(ctx context.Context, pf models.ParsedFile, hash string, resolve ResolveFunc) error {
 	tx, err := s.DB.BeginTx(ctx, nil)
@@ -116,7 +116,7 @@ func (s *Store) PersistFile(ctx context.Context, pf models.ParsedFile, hash stri
 		}
 
 		if resolve != nil {
-			if targetID, ok := resolve(call.Target); ok {
+			if targetID, ok := resolve(call); ok {
 				if err := q.InsertEdge(ctx, generated.InsertEdgeParams{
 					SourceSymbol: caller,
 					TargetSymbol: sql.NullString{String: targetID, Valid: true},
