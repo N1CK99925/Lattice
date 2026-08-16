@@ -26,6 +26,41 @@ func (q *Queries) DeleteEdgesByFile(ctx context.Context, arg DeleteEdgesByFilePa
 	return err
 }
 
+const getDependencies = `-- name: GetDependencies :many
+SELECT target_symbol, target_external, kind
+FROM edges
+WHERE source_symbol = ?
+`
+
+type GetDependenciesRow struct {
+	TargetSymbol   sql.NullString
+	TargetExternal sql.NullString
+	Kind           string
+}
+
+func (q *Queries) GetDependencies(ctx context.Context, sourceSymbol string) ([]GetDependenciesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getDependencies, sourceSymbol)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDependenciesRow
+	for rows.Next() {
+		var i GetDependenciesRow
+		if err := rows.Scan(&i.TargetSymbol, &i.TargetExternal, &i.Kind); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertEdge = `-- name: InsertEdge :exec
 INSERT INTO edges (source_symbol, target_symbol, target_external, kind)
 VALUES (?, ?, ?, ?)
