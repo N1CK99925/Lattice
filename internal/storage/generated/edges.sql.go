@@ -61,6 +61,41 @@ func (q *Queries) GetDependencies(ctx context.Context, sourceSymbol string) ([]G
 	return items, nil
 }
 
+const getDependents = `-- name: GetDependents :many
+SELECT source_symbol, target_external, kind
+FROM edges
+WHERE target_symbol = ?
+`
+
+type GetDependentsRow struct {
+	SourceSymbol   string
+	TargetExternal sql.NullString
+	Kind           string
+}
+
+func (q *Queries) GetDependents(ctx context.Context, targetSymbol sql.NullString) ([]GetDependentsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getDependents, targetSymbol)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDependentsRow
+	for rows.Next() {
+		var i GetDependentsRow
+		if err := rows.Scan(&i.SourceSymbol, &i.TargetExternal, &i.Kind); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertEdge = `-- name: InsertEdge :exec
 INSERT INTO edges (source_symbol, target_symbol, target_external, kind)
 VALUES (?, ?, ?, ?)

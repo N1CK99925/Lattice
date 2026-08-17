@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package commands
 
 import (
@@ -15,7 +12,7 @@ import (
 // depsCmd represents the deps command
 var depsCmd = &cobra.Command{
 	Use:   "deps [symbol]",
-	Short: "Show ddependencies of a symbol",
+	Short: "Show dependencies of a symbol",
 	Args:  cobra.ExactArgs(1),
 	RunE:  getDeps,
 }
@@ -39,11 +36,10 @@ func getDeps(cmd *cobra.Command, args []string) error {
 	}
 	defer store.Close()
 	symbol := args[0]
-	rows, err := store.Queries.GetDependencies(cmd.Context(), symbol)
+	rows, err := store.GetDependencies(cmd.Context(), symbol)
 	if err != nil {
 		return err
 	}
-	fmt.Println("rows:", len(rows))
 	for _, row := range rows {
 		if row.TargetSymbol.Valid {
 			fmt.Println(row.TargetSymbol.String)

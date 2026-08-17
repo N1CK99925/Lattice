@@ -1,27 +1,20 @@
-/*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-*/
 package commands
 
 import (
+	"Lattice/internal/logger"
+	"Lattice/internal/storage"
 	"fmt"
+	"log/slog"
 
 	"github.com/spf13/cobra"
 )
 
-// dependentsCmd represents the dependents command
+// depsCmd represents the deps command
 var dependentsCmd = &cobra.Command{
-	Use:   "dependents",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dependents called")
-	},
+	Use:   "dependents [symbol]",
+	Short: "Show dependencies of a symbol",
+	Args:  cobra.ExactArgs(1),
+	RunE:  getDependents,
 }
 
 func init() {
@@ -29,11 +22,27 @@ func init() {
 
 	// Here you will define your flags and configuration settings.
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dependentsCmd.PersistentFlags().String("foo", "", "A help for foo")
+}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// dependentsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func getDependents(cmd *cobra.Command, args []string) error {
+	logger.Init(logger.Config{
+		Level: slog.LevelInfo,
+		Json:  false,
+	})
+
+	store, err := storage.New("./Lattice.db")
+	if err != nil {
+		logger.Log.Error("Error opening database", "err", err)
+	}
+	defer store.Close()
+	symbol := args[0]
+	rows, err := store.GetDependents(cmd.Context(), symbol)
+	if err != nil {
+		return err
+	}
+	for _, row := range rows {
+		fmt.Println(row.SourceSymbol)
+	}
+
+	return nil
 }
