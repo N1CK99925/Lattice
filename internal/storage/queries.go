@@ -16,3 +16,10 @@ func (s *Store) GetDependents(ctx context.Context, symbol string) ([]generated.G
 		Valid:  true,
 	})
 }
+
+func (s *Store) GetCallers(ctx context.Context, symbol string) ([]generated.GetCallersRow, error) {
+	return s.Queries.GetCallers(ctx, sql.NullString{
+		String: symbol,
+		Valid:  true,
+	})
+}

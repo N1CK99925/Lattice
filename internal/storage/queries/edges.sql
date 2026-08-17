@@ -17,3 +17,9 @@ SELECT source_symbol, target_external, kind
 FROM edges
 WHERE target_symbol = ?;
 
+-- name: GetCallers :many
+SELECT source_symbol, target_external, kind
+FROM edges
+WHERE target_symbol = ?
+AND kind = 'calls';
+

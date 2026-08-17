@@ -4,36 +4,40 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package commands
 
 import (
-	"fmt"
+	"Lattice/internal/storage"
 
 	"github.com/spf13/cobra"
 )
 
 // callersCmd represents the callers command
 var callersCmd = &cobra.Command{
-	Use:   "callers",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("callers called")
-	},
+	Use:   "callers [symbol]",
+	Short: "Prints callers of a symbol",
+	Args:  cobra.ExactArgs(1),
+	RunE:  RunCallers,
 }
 
 func init() {
 	rootCmd.AddCommand(callersCmd)
 
-	// Here you will define your flags and configuration settings.
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// callersCmd.PersistentFlags().String("foo", "", "A help for foo")
+func RunCallers(cmd *cobra.Command, args []string) error {
+	store, err := storage.New("./Lattice.db")
+	if err != nil {
+		return err
+	}
+	defer store.Close()
+	symbol := args[0]
+	rows, err := store.GetCallers(cmd.Context(), symbol)
+	if err != nil {
+		return err
+	}
+	for _, row := range rows {
+		if row.TargetExternal.Valid {
+			println(row.TargetExternal.String)
+		}
+	}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// callersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	return nil
 }
