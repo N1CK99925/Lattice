@@ -23,3 +23,7 @@ func (s *Store) GetCallers(ctx context.Context, symbol string) ([]generated.GetC
 		Valid:  true,
 	})
 }
+
+func (s *Store) Deadcode(ctx context.Context) ([]generated.DeadcodeRow, error) {
+	return s.Queries.Deadcode(ctx)
+}
