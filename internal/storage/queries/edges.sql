@@ -22,6 +22,7 @@ SELECT source_symbol, target_external, kind
 FROM edges
 WHERE target_symbol = ?
 AND kind = 'calls';
+
 -- name: Deadcode :many
 SELECT s.id, s.name
 FROM symbols s
