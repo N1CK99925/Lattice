@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lattice — Codebase Intelligence</title>
+<meta name="description" content="Lattice models repositories as a living knowledge graph." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfbfd; --ink:#15161a; --muted:#74747d; --line:rgba(21,22,26,.12);
+  --line-strong:rgba(21,22,26,.18); --wash:#f4f3fb; --max:1240px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button,a{-webkit-tap-highlight-color:transparent}
+.serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:lowercase}
+.wrap{width:min(calc(100% - 72px),var(--max));margin-inline:auto}
+
+/* background sonar */
+.rings{position:absolute;inset:-200px -100px -220px;pointer-events:none;overflow:hidden}
+.ring{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);aspect-ratio:1;border:1px solid rgba(21,22,26,.085);border-radius:50%}
+.ring.r1{width:660px}.ring.r2{width:960px}.ring.r3{width:1280px}.ring.r4{width:1600px}
+
+/* hero */
+.hero{position:relative;min-height:820px;overflow:hidden;background:
+  radial-gradient(ellipse at 50% 38%,rgba(214,210,244,.55) 0%,rgba(229,226,247,.28) 22%,rgba(251,251,253,0) 52%),var(--bg)}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(251,251,253,0) 70%,var(--bg) 100%);pointer-events:none}
+.top-left{position:absolute;top:30px;left:36px;z-index:3;width:175px;color:rgba(21,22,26,.48);font-size:10px;line-height:1.45}
+.top-right{position:absolute;top:29px;right:36px;z-index:3;display:grid;grid-template-columns:auto auto;gap:26px;color:rgba(21,22,26,.5);font-size:9px;line-height:1.9}
+.floating-nav{position:absolute;z-index:5;left:50%;top:22px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;border:1px solid rgba(21,22,26,.15);border-radius:999px;background:rgba(251,251,253,.78);backdrop-filter:blur(14px);padding:8px 11px 8px 9px;box-shadow:0 8px 24px rgba(21,22,26,.045)}
+.mark {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+.wordmark{font-size:9px;letter-spacing:.19em}.menu{display:grid;gap:3px;width:11px;margin-left:3px}.menu i{display:block;width:100%;height:1px;background:var(--ink)}
+.hero-inner{position:relative;z-index:2;min-height:820px;display:flex;align-items:center;justify-content:center;text-align:center;padding:122px 0 96px}
+.hero-content{max-width:930px}
+.kicker{font-size:10px;color:rgba(21,22,26,.46);margin-bottom:24px}
+.hero h1{font-size:clamp(72px,9vw,116px);line-height:.81;letter-spacing:-.032em;margin:0}
+.hero h1 span{display:block}
+.hero-copy{max-width:570px;margin:34px auto 0;color:#65656e;font-size:13px;line-height:1.65}
+.actions{display:flex;gap:9px;justify-content:center;margin-top:27px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:999px;border:1px solid var(--line-strong);font:500 10px "JetBrains Mono",monospace;letter-spacing:.03em;transition:.22s ease}
+.btn:hover{transform:translateY(-1px);border-color:rgba(21,22,26,.28)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#27282d}
+.hero-bottom{position:absolute;z-index:3;left:36px;right:36px;bottom:25px;display:flex;justify-content:space-between;color:rgba(21,22,26,.38);font-size:8px}
+
+/* common section heading */
+section{position:relative}
+.section{padding:110px 0;border-top:1px solid var(--line)}
+.section-label{font-size:10px;color:rgba(21,22,26,.45);margin-bottom:22px}
+.section-title{font-size:72px;line-height:.9;letter-spacing:-.03em;margin:0}
+
+/* overview */
+.overview{padding-top:118px}
+.overview-head{display:grid;grid-template-columns:1fr 1.2fr;gap:120px;align-items:end}
+.overview-title{font-size:78px;line-height:.83;letter-spacing:-.035em;max-width:570px}
+.overview-copy{max-width:510px;color:#686871;font-size:13px;line-height:1.7}
+.graph-panel{position:relative;height:430px;margin-top:72px;border:1px solid var(--line-strong);border-radius:24px;overflow:hidden;background:
+ radial-gradient(circle at 50% 50%,rgba(211,207,237,.5),rgba(239,238,248,.62) 38%,rgba(248,248,251,.92) 72%),var(--wash)}
+.graph-panel .panel-rings{position:absolute;inset:-200px}
+.panel-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid rgba(21,22,26,.095);border-radius:50%;aspect-ratio:1}.panel-ring.a{width:390px}.panel-ring.b{width:650px}.panel-ring.c{width:910px}.panel-ring.d{width:1180px}
+.graph-svg{position:absolute;inset:0;width:100%;height:100%}
+.graph-svg path{stroke:rgba(21,22,26,.38);stroke-width:1;fill:none}.graph-svg circle{fill:#202126}.graph-svg .major{r:8;fill:#15161a}.graph-label{position:absolute;font:9px "JetBrains Mono",monospace;color:rgba(21,22,26,.47);letter-spacing:.04em}
+.graph-label.one{left:19%;top:26%}.graph-label.two{left:44%;top:16%}.graph-label.three{right:20%;top:32%}.graph-label.four{left:31%;bottom:19%}.graph-label.five{right:28%;bottom:17%}
+
+/* platform */
+.platform{padding-bottom:120px}
+.platform-head{display:flex;justify-content:space-between;align-items:flex-end}
+.platform-head .section-title{font-size:76px}
+.view-link{font-size:9px;color:rgba(21,22,26,.46);padding-bottom:7px}
+.cap-grid{margin-top:57px;border-top:1px solid var(--line-strong);border-left:1px solid var(--line-strong);display:grid;grid-template-columns:repeat(3,1fr)}
+.cap{min-height:220px;padding:25px 25px 30px;border-right:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong);background:rgba(251,251,253,.42);transition:background .2s ease}
+.cap:hover{background:#f7f6fc}.cap-code{font-size:10px;color:rgba(21,22,26,.4);margin-bottom:45px}.cap h3{font-size:15px;font-weight:500;margin:0 0 12px}.cap p{max-width:310px;margin:0;color:#777780;font-size:11px;line-height:1.65}
+
+/* workflow */
+.workflow{background:var(--wash);padding:118px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.workflow-grid{display:grid;grid-template-columns:.88fr 1.12fr;gap:110px;align-items:center}
+.workflow-title{font-size:75px;line-height:.84;letter-spacing:-.035em;max-width:580px}
+.workflow-copy{max-width:430px;margin-top:28px;color:#6e6e77;font-size:13px;line-height:1.7}.docs-link{display:inline-flex;margin-top:25px;font:9px "JetBrains Mono",monospace;color:rgba(21,22,26,.52);border-bottom:1px solid rgba(21,22,26,.22);padding-bottom:5px}
+.terminal{border:1px solid var(--line-strong);border-radius:15px;background:rgba(255,255,255,.82);box-shadow:0 22px 50px rgba(21,22,26,.08);overflow:hidden}.terminal-top{height:39px;padding:0 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:5px}.dot{width:6px;height:6px;border-radius:50%;background:rgba(21,22,26,.16)}.terminal-name{font-size:8px;color:rgba(21,22,26,.4);margin-left:7px}.terminal pre{margin:0;padding:26px 25px 24px;font:11px/1.8 "JetBrains Mono",monospace;color:#313239;white-space:pre-wrap}.terminal-status{border-top:1px solid var(--line);padding:13px 25px;font:8px "JetBrains Mono",monospace;color:rgba(21,22,26,.43)}
+
+/* quote */
+.quote{min-height:540px;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid var(--line)}
+.quote-rings{position:absolute;inset:-170px -50px}.quote-ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid rgba(21,22,26,.085);border-radius:50%;aspect-ratio:1}.quote-ring.q1{width:520px}.quote-ring.q2{width:760px}.quote-ring.q3{width:1020px}.quote-ring.q4{width:1310px}
+blockquote{position:relative;z-index:2;max-width:970px;text-align:center;margin:0;font-size:clamp(46px,6vw,78px);line-height:.89;letter-spacing:-.03em}
+
+/* beta */
+.beta{padding:120px 0;border-bottom:1px solid var(--line)}.beta-inner{display:flex;justify-content:space-between;align-items:center;gap:40px}.beta-title{font-size:82px;line-height:.84;letter-spacing:-.035em}.beta-sub{font-size:10px;color:rgba(21,22,26,.46);margin-bottom:22px}
+
+/* footer */
+footer{padding:55px 0 30px}.footer-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:40px}.footer-brand{font:10px "JetBrains Mono",monospace;letter-spacing:.18em;display:flex;gap:8px;align-items:center}.footer-brand .mini{width:11px;height:11px;border:1px solid var(--ink)}.footer-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.footer-col{display:flex;flex-direction:column;gap:10px}.footer-col a{font:9px "JetBrains Mono",monospace;color:rgba(21,22,26,.52)}.footer-bottom{margin-top:67px;padding-top:17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font:8px "JetBrains Mono",monospace;color:rgba(21,22,26,.34)}
+
+@media(max-width:900px){
+ .wrap{width:min(calc(100% - 40px),var(--max))}.top-left,.top-right{display:none}.hero{min-height:720px}.hero-inner{min-height:720px;padding-top:105px}.overview-head,.workflow-grid{grid-template-columns:1fr;gap:35px}.overview-title,.section-title,.platform-head .section-title,.workflow-title,.beta-title{font-size:58px}.cap-grid{grid-template-columns:repeat(2,1fr)}.graph-panel{height:360px}.footer-grid{grid-template-columns:1fr}.hero-bottom{left:20px;right:20px}
+}
+@media(max-width:560px){
+ .wrap{width:calc(100% - 28px)}.floating-nav{top:14px}.hero{min-height:670px}.hero-inner{min-height:670px;padding-top:92px}.hero h1{font-size:62px}.hero-copy{font-size:11px}.actions{flex-direction:column;width:180px;margin-inline:auto}.section{padding:78px 0}.overview{padding-top:86px}.overview-title,.section-title,.platform-head .section-title,.workflow-title,.beta-title{font-size:47px}.overview-head{gap:25px}.graph-panel{height:270px;margin-top:42px;border-radius:18px}.cap-grid{grid-template-columns:1fr}.cap{min-height:185px}.workflow{padding:82px 0}.terminal pre{font-size:9px}.quote{min-height:390px}blockquote{font-size:44px;padding:0 12px}.beta-inner{flex-direction:column;align-items:flex-start}.footer-cols{grid-template-columns:repeat(3,1fr);gap:15px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.cap{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero" id="top">
+  <div class="rings" aria-hidden="true"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div></div>
+  <div class="top-left mono">a graph-native substrate for<br>understanding complex systems.</div>
+  <div class="top-right mono"><div><a href="#platform">platform</a><br><a href="#platform">capabilities</a><br><a href="#workflow">workflow</a><br><a href="#beta">beta</a></div><div><a href="#overview">overview</a><br><a href="#beta">changelog</a><br><a href="#workflow">docs</a><br><a href="#beta">contact</a></div></div>
+  <a class="floating-nav" href="#top" aria-label="Lattice home"><img class="mark" src="./assets/lattice-mark.png" alt="Lattice logo"></span><span class="wordmark mono">lattice</span><span class="menu" aria-hidden="true"><i></i><i></i></span></a>
+  <div class="wrap hero-inner">
+    <div class="hero-content">
+      <div class="kicker mono">codebase intelligence / graph-native</div>
+      <h1 class="serif"><span>a graph-native substrate</span><span>for understanding</span><span>complex systems.</span></h1>
+      <p class="hero-copy">Lattice parses, resolves, and models your entire codebase as a living knowledge graph — built for engineers and the agents that work beside them.</p>
+      <div class="actions"><a class="btn primary" href="#beta">request access</a><a class="btn" href="#overview">read the overview</a></div>
+    </div>
+  </div>
+  <div class="hero-bottom mono"><span>© 2026 / lattice</span><span>sonar view</span></div>
+</section>
+
+<section id="overview" class="section overview">
+  <div class="wrap">
+    <div class="overview-head">
+      <div><div class="section-label mono">01 — overview</div><h2 class="overview-title serif">your code,<br>mapped as a graph.</h2></div>
+      <p class="overview-copy">Every function, module and dependency in your repository becomes a node. Every call, import, and reference becomes an edge. Lattice keeps this substrate live as your codebase changes — so nothing you build on it ever goes stale.</p>
+    </div>
+    <div class="graph-panel" aria-label="Lattice repository graph illustration">
+      <div class="panel-rings" aria-hidden="true"><div class="panel-ring a"></div><div class="panel-ring b"></div><div class="panel-ring c"></div><div class="panel-ring d"></div></div>
+      <svg class="graph-svg" viewBox="0 0 1200 430" preserveAspectRatio="none" aria-hidden="true">
+        <g>
+          <path d="M285 195 L415 125 L545 205 L680 118 L815 196 L953 154"/><path d="M415 125 L355 290 L510 325 L623 266 L815 196"/><path d="M285 195 L166 242 L355 290"/><path d="M355 290 L315 389"/><path d="M510 325 L505 418"/><path d="M623 266 L720 340 L815 196"/><path d="M815 196 L908 252 L1014 190"/><path d="M545 205 L623 266"/><path d="M545 205 L560 48"/>
+          <path d="M166 242 L80 175"/><path d="M953 154 L1080 106"/>
+        </g>
+        <g><circle cx="545" cy="205" class="major"/><circle cx="415" cy="125" r="7"/><circle cx="680" cy="118" r="7"/><circle cx="815" cy="196" r="8"/><circle cx="355" cy="290" r="7"/><circle cx="623" cy="266" r="7"/><circle cx="510" cy="325" r="7"/><circle cx="285" cy="195" r="5"/><circle cx="166" cy="242" r="5"/><circle cx="315" cy="389" r="5"/><circle cx="505" cy="418" r="5"/><circle cx="720" cy="340" r="5"/><circle cx="908" cy="252" r="5"/><circle cx="1014" cy="190" r="5"/><circle cx="953" cy="154" r="5"/><circle cx="560" cy="48" r="5"/><circle cx="80" cy="175" r="4"/><circle cx="1080" cy="106" r="4"/></g>
+      </svg>
+      <div class="graph-label one">UserService</div><div class="graph-label two">AuthMiddleware</div><div class="graph-label three">Postgres</div><div class="graph-label four">Logger</div><div class="graph-label five">EventPublisher</div>
+    </div>
+  </div>
+</section>
+
+<section id="platform" class="section platform">
+  <div class="wrap">
+    <div class="platform-head"><div><div class="section-label mono">02 — platform</div><h2 class="section-title serif">what lattice does.</h2></div><a class="view-link mono" href="#platform">view all capabilities →</a></div>
+    <div class="cap-grid">
+      <article class="cap"><div class="cap-code mono">/parse</div><h3>universal parsing</h3><p>Tree-sitter grammars extract precise syntax trees across dozens of languages and frameworks.</p></article>
+      <article class="cap"><div class="cap-code mono">/resolve</div><h3>symbol resolution</h3><p>Cross-file references connect definitions to usages, forming a coherent map of your system.</p></article>
+      <article class="cap"><div class="cap-code mono">/model</div><h3>knowledge graph</h3><p>Resolved symbols become a directed graph of types, functions and modules — your architecture, made explicit.</p></article>
+      <article class="cap"><div class="cap-code mono">/retrieve</div><h3>hybrid retrieval</h3><p>Vector embeddings and exact graph traversal work together to surface the most relevant context.</p></article>
+      <article class="cap"><div class="cap-code mono">/reason</div><h3>agent-ready context</h3><p>LLM agents traverse the graph to answer questions, trace impact, and explain complex flows.</p></article>
+      <article class="cap"><div class="cap-code mono">/run</div><h3>local-first runtime</h3><p>Everything indexes on your machine. Your source code never leaves your environment.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="workflow" class="workflow">
+  <div class="wrap workflow-grid">
+    <div><div class="section-label mono">03 — workflow</div><h2 class="workflow-title serif">query the graph from your terminal.</h2><p class="workflow-copy">A CLI that speaks your language. Trace dependencies, surface dead code, and ask questions about your architecture — without leaving your workflow.</p><a class="docs-link mono" href="#">read the docs →</a></div>
+    <div class="terminal"><div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="terminal-name mono">terminal — lattice</span></div><pre>$ lattice trace UserService --depth 2
+
+UserService
+├── AuthMiddleware
+├── UserRepository
+│  └── Postgres :Client
+└── Logger
+
+</pre><div class="terminal-status">✓ resolved 4 nodes · 6 edges in 42ms</div></div>
+  </div>
+</section>
+
+<section class="quote">
+  <div class="quote-rings" aria-hidden="true"><div class="quote-ring q1"></div><div class="quote-ring q2"></div><div class="quote-ring q3"></div><div class="quote-ring q4"></div></div>
+  <blockquote class="serif">“Your codebase already contains the answers.<br>Lattice makes the relationships visible.”</blockquote>
+</section>
+
+<section id="beta" class="beta">
+  <div class="wrap beta-inner"><div><div class="beta-sub mono">04 — beta</div><h2 class="beta-title serif">now onboarding<br>early teams.</h2></div><a class="btn primary" href="mailto:hello@lattice.dev?subject=Lattice%20access">request access</a></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid"><div class="footer-brand"><span class="mini"></span>lattice</div><div class="footer-cols"><div class="footer-col"><a href="#platform">platform</a><a href="#platform">capabilities</a><a href="#workflow">workflow</a><a href="#beta">beta</a></div><div class="footer-col"><a href="#overview">overview</a><a href="#beta">changelog</a><a href="#workflow">docs</a></div><div class="footer-col"><a href="#top">github</a><a href="#beta">contact</a></div></div></div>
+    <div class="footer-bottom"><span>© 2026 / lattice</span><span>sonar view</span></div>
+  </div>
+</footer>
+</body>
+</html>
