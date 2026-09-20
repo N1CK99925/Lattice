@@ -4,3 +4,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: DeleteSymbolsByFile :exec
 DELETE FROM symbols WHERE file_id = ?;
+
+-- name: GetAllSymbols :many
+SELECT id FROM symbols;

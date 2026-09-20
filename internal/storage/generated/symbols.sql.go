@@ -19,6 +19,33 @@ func (q *Queries) DeleteSymbolsByFile(ctx context.Context, fileID int64) error {
 	return err
 }
 
+const getAllSymbols = `-- name: GetAllSymbols :many
+SELECT id FROM symbols
+`
+
+func (q *Queries) GetAllSymbols(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getAllSymbols)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertSymbol = `-- name: InsertSymbol :exec
 INSERT INTO symbols (id, file_id, name, receiver, kind, start_line, end_line, exported, scope)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)

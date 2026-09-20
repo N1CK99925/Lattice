@@ -20,8 +20,6 @@ var depsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(depsCmd)
 
-	// Here you will define your flags and configuration settings.
-
 }
 
 func getDeps(cmd *cobra.Command, args []string) error {

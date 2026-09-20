@@ -55,3 +55,9 @@ Done so far:
 - [ ] Graph representation (`internal/graph`)
 - [ ] Additional languages beyond Go
 - [ ] Proper CLI flags / subcommands
+
+
+
+
+
+why did I write this in go? cuz I wanted to

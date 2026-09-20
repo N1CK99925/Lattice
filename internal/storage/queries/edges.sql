@@ -34,3 +34,7 @@ WHERE s.scope = 'package'
       WHERE e.target_symbol = s.id
         AND e.kind IN ('calls', 'type_use')
   );
+
+-- name: GetAllEdges :many
+SELECT source_symbol, target_symbol, target_external, kind
+from edges;
