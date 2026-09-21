@@ -64,12 +64,12 @@ func (g *Graph) Traverse(from string, Depth int, direction Direction) ([]Node, e
 }
 
 // Things that A depend on
-func (g *Graph) dependecies(symbol string, depth int) ([]Node, error) {
+func (g *Graph) Dependencies(symbol string, depth int) ([]Node, error) {
 
 	return g.Traverse(symbol, depth, Forward)
 }
 
 // Thing that depend on A
-func (g *Graph) dependents(symbol string, depth int) ([]Node, error) {
-	return g.Traverse(symbol, depth, Forward)
+func (g *Graph) Dependents(symbol string, depth int) ([]Node, error) {
+	return g.Traverse(symbol, depth, Reverse)
 }

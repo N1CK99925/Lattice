@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"Lattice/internal/graph"
 	"Lattice/internal/logger"
 	"Lattice/internal/storage"
 	"fmt"
@@ -19,7 +20,7 @@ var depsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(depsCmd)
-
+	depsCmd.Flags().IntP("depth", "d", 5, "Depth to traverse")
 }
 
 func getDeps(cmd *cobra.Command, args []string) error {
@@ -33,20 +34,26 @@ func getDeps(cmd *cobra.Command, args []string) error {
 		logger.Log.Error("Error opening database", "err", err)
 	}
 	defer store.Close()
-	symbol := args[0]
-	rows, err := store.GetDependencies(cmd.Context(), symbol)
+
+	g, err := graph.Load(cmd.Context(), store)
 	if err != nil {
 		return err
 	}
-	for _, row := range rows {
-		if row.TargetSymbol.Valid {
-			fmt.Println(row.TargetSymbol.String)
-		}
 
-		if row.TargetExternal.Valid {
-			fmt.Println(row.TargetExternal.String)
-		}
+	depth, err := cmd.Flags().GetInt("depth")
+	fmt.Printf("depth: %d\n", depth)
+	if err != nil {
+		return err
 	}
 
+	symbol := args[0]
+	nodes, err := g.Dependencies(symbol, depth)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range nodes {
+		fmt.Println(node.ID)
+	}
 	return nil
 }
