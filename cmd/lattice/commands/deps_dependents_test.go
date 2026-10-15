@@ -53,7 +53,18 @@ var fixtureSymbols = []fixtureSym{
 	{file: "main.go", name: "B", line: 7},
 	{file: "main.go", name: "C", line: 11},
 	{file: "main.go", name: "D", line: 15},
-	{file: "extra.go", name: "E", line: 3},
+	{file: "main.go", name: "E", line: 19},
+	{file: "main.go", name: "F", line: 23},
+	{file: "main.go", name: "G", line: 27},
+	{file: "main.go", name: "H", line: 31},
+	{file: "main.go", name: "I", line: 35},
+	{file: "main.go", name: "J", line: 39},
+	{file: "main.go", name: "K", line: 43},
+	{file: "extra.go", name: "L", line: 3},
+	{file: "extra.go", name: "M", line: 7},
+	{file: "extra.go", name: "N", line: 11},
+	{file: "extra.go", name: "O", line: 15},
+	{file: "extra.go", name: "P", line: 19},
 }
 
 // callEdges is the resolved call graph inside go_code_test.
@@ -61,7 +72,18 @@ var callEdges = [][2]string{
 	{"A", "B"},
 	{"B", "C"},
 	{"C", "D"},
-	{"E", "C"},
+	{"D", "E"},
+	{"E", "F"},
+	{"F", "G"},
+	{"G", "H"},
+	{"H", "I"},
+	{"I", "J"},
+	{"J", "K"},
+	{"L", "C"},
+	{"M", "E"},
+	{"N", "G"},
+	{"O", "I"},
+	{"P", "C"},
 }
 
 func symbolID(t *testing.T, name string) string {
@@ -223,8 +245,8 @@ func TestDeps(t *testing.T) {
 	seedFixtureDB(t)
 
 	a := symbolID(t, "A")
-	e := symbolID(t, "E")
-	d := symbolID(t, "D")
+	p := symbolID(t, "P")
+	k := symbolID(t, "K")
 
 	tests := []struct {
 		name   string
@@ -236,7 +258,7 @@ func TestDeps(t *testing.T) {
 			name:   "full chain",
 			symbol: a,
 			depth:  defaultDepth(),
-			want:   ids(t, "A", "B", "C", "D"),
+			want:   ids(t, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"),
 		},
 		{
 			name:   "depth one stops at direct deps",
@@ -252,15 +274,15 @@ func TestDeps(t *testing.T) {
 		},
 		{
 			name:   "cross file dependency",
-			symbol: e,
+			symbol: p,
 			depth:  defaultDepth(),
-			want:   ids(t, "E", "C", "D"),
+			want:   ids(t, "P", "C", "D", "E", "F", "G", "H", "I", "J", "K"),
 		},
 		{
 			name:   "leaf has no dependencies",
-			symbol: d,
+			symbol: k,
 			depth:  defaultDepth(),
-			want:   ids(t, "D"),
+			want:   ids(t, "K"),
 		},
 	}
 
@@ -279,7 +301,7 @@ func TestDependents(t *testing.T) {
 	seedFixtureDB(t)
 
 	c := symbolID(t, "C")
-	d := symbolID(t, "D")
+	k := symbolID(t, "K")
 	a := symbolID(t, "A")
 
 	tests := []struct {
@@ -292,25 +314,25 @@ func TestDependents(t *testing.T) {
 			name:   "everything that transitively calls",
 			symbol: c,
 			depth:  defaultDepth(),
-			want:   ids(t, "C", "B", "E", "A"),
+			want:   ids(t, "C", "B", "L", "P", "A"),
 		},
 		{
 			name:   "depth one stops at direct callers",
 			symbol: c,
 			depth:  1,
-			want:   ids(t, "C", "B", "E"),
+			want:   ids(t, "C", "B", "L", "P"),
 		},
 		{
-			name:   "leaf gathers the whole chain",
-			symbol: d,
+			name:   "leaf gathers the whole graph",
+			symbol: k,
 			depth:  defaultDepth(),
-			want:   ids(t, "D", "C", "B", "E", "A"),
+			want:   ids(t, "K", "J", "I", "H", "O", "G", "F", "N", "E", "D", "M", "C", "B", "L", "P", "A"),
 		},
 		{
 			name:   "depth stops the reverse walk",
-			symbol: d,
+			symbol: k,
 			depth:  2,
-			want:   ids(t, "D", "C", "B", "E"),
+			want:   ids(t, "K", "J", "I"),
 		},
 		{
 			name:   "uncalled symbol has no dependents",
@@ -382,8 +404,8 @@ func TestDepsIntegration(t *testing.T) {
 	})
 
 	got := runDeps(t, symbolID(t, "A"), defaultDepth())
-	if !reflect.DeepEqual(got, ids(t, "A", "B", "C", "D")) {
-		t.Fatalf("integration deps = %v, want %v", got, ids(t, "A", "B", "C", "D"))
+	if !reflect.DeepEqual(got, ids(t, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K")) {
+		t.Fatalf("integration deps = %v, want %v", got, ids(t, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"))
 	}
 }
 
@@ -402,7 +424,7 @@ func TestDependentsIntegration(t *testing.T) {
 	})
 
 	got := functionNames(t, runDependents(t, symbolID(t, "C"), defaultDepth()))
-	want := []string{"A", "B", "C", "E"}
+	want := []string{"A", "B", "C", "L", "P"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("integration dependents = %v, want %v", got, want)
 	}

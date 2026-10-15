@@ -20,7 +20,7 @@ var dependentsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(dependentsCmd)
-	dependentsCmd.Flags().IntP("depth", "d", 5, "Depth to traverse")
+	dependentsCmd.Flags().IntP("depth", "d", 15, "Depth to traverse")
 }
 
 func getDependents(cmd *cobra.Command, args []string) error {

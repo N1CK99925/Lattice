@@ -1,5 +1,10 @@
 # Lattice
 
+### Project is paused indefinitely because of lost vision and motivation
+
+
+
+
 Lattice builds a graph of your codebase so agents (LLMs) can get real context about it — what symbols exist, who calls what, and how files depend on each other. It parses Go source with tree-sitter and turns it into a queryable call graph.
 
 ## How it works
